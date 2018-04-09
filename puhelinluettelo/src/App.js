@@ -90,6 +90,15 @@ class App extends React.Component {
       })
   }
 
+  clearFields() {
+    this.setState({
+      newContact : {
+        name: '',
+        number: ''
+      }
+    });
+  }
+
   submit(event) {
     event.preventDefault();
 
@@ -112,11 +121,11 @@ class App extends React.Component {
         person.id = existing.id;
         persons.update(existing.id, person)
           .then(() => {
-            this.refresh();
             this.notify("muutettiin " + person.name + " numero " + person.number);
-          })
-          .catch(er => {
-            this.notify("henkilö " + person.name + " on jo valitettavasti poistettu palvelimelta");
+            this.refresh();
+            this.clearFields();
+          }).catch((er) => {
+            this.notify(er.toString());
             this.refresh();
           });
       }
@@ -124,14 +133,12 @@ class App extends React.Component {
     } else {
       persons.create(person)
         .then(ps => {
-          this.refresh();
-          this.setState({
-            newContact : {
-              name: '',
-              number: ''
-            }
-          });
           this.notify("lisättiin " + person.name);
+          this.refresh();
+          this.clearFields();
+        }).catch((er) => {
+          this.notify(er.toString());
+          this.refresh();
         });
     }
   }
