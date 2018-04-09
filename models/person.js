@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
-const fs = require('fs');
+
+/*global process: true*/
+if ( process.env.NODE_ENV !== 'production' ) {
+  require('dotenv').config();
+}
 
 const url = process.env.MONGODB_URI;
 

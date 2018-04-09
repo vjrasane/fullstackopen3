@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "watch": "nodemon index.js",
+    "lint" : "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,8 +25,10 @@
     , "morgan" : "^1.9.0"
     , "cors" : "^2.8.4"
     , "mongoose" : "^5.0.13"
+    , "dotenv" : "^5.0.1"
   },
   "devDependencies": {
     "nodemon": "^1.13.3"
+  , "eslint" : "^4.19.1"
   }
 }

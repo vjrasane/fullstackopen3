@@ -1,29 +1,28 @@
-const express = require('express')
-const fs = require('fs');
+const express = require('express');
 const dateFormat = require('dateformat');
-const bodyParser = require('body-parser')
-const morgan = require('morgan')
-const cors = require('cors')
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const cors = require('cors');
 
-const Person = require('./models/person')
+const Person = require('./models/person');
 
-const app = express()
+const app = express();
 
-app.use(express.static('build'))
-app.use(cors())
-app.use(bodyParser.json())
+app.use(express.static('build'));
+app.use(cors());
+app.use(bodyParser.json());
 
-morgan.token('content', function (req, res) { return JSON.stringify(req.body) })
+morgan.token('content', (req) => { return JSON.stringify(req.body) });
 
-app.use(morgan(':method :url :content :status :res[content-length] - :response-time ms'))
+app.use(morgan(':method :url :content :status :res[content-length] - :response-time ms'));
 
-var format = "ddd mmm dS yyyy HH:MM:ss Z"
+var format = 'ddd mmm dS yyyy HH:MM:ss Z';
 
 app.post('/api/persons', (req, res) => {
   const body = req.body
 
   if (body.name === undefined || body.number === undefined) {
-    return res.status(400).json({error: 'missing name or number'})
+    return res.status(400).json({ error: 'missing name or number' })
   }
 
   Person
@@ -32,11 +31,11 @@ app.post('/api/persons', (req, res) => {
       if(!p || p.length === 0) {
         new Person({
           name: body.name,
-          number: body.number})
-            .save()
-            .then(p => res.json(Person.format(p)));
+          number: body.number })
+          .save()
+          .then(p => res.json(Person.format(p)));
       } else {
-        res.status(409).json({error: 'name must be unique'})
+        res.status(409).json({ error: 'name must be unique' })
       }
     });
 
@@ -46,19 +45,19 @@ app.put('/api/persons/:id', (req, res) => {
   const body = req.body
 
   if (body.name === undefined || body.number === undefined) {
-    return res.status(400).json({error: 'missing name or number'})
+    return res.status(400).json({ error: 'missing name or number' })
   }
 
   Person.update({ _id: req.params.id }, { $set: {
-      name: body.name,
-      number: body.number
-    }
+    name: body.name,
+    number: body.number
+  }
   })
-  .then(p => res.json(Person.format(p)))
-  .catch(er => {
-    console.log(er);
-    res.status(400).send({error: er})
-  });
+    .then(p => res.json(Person.format(p)))
+    .catch(er => {
+      console.log(er);
+      res.status(400).send({ error: er })
+    });
 })
 
 app.get('/api/persons', (req, res) => {
@@ -82,22 +81,23 @@ app.get('/api/persons/:id', (req, res) => {
     .then(p => res.json(Person.format(p)))
     .catch(er => {
       console.log(er);
-      res.status(400).send({ error: er})
+      res.status(400).send({ error: er })
     });
 })
 
 app.delete('/api/persons/:id', (req, res) => {
   Person
     .remove({ _id: req.params.id })
-    .then(p => res.status(204).end());
+    .then(() => res.status(204).end());
 })
 
 const error = (req, res) => {
-  res.status(404).send({error: 'unknown endpoint'})
+  res.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(error)
 
+/*global process: true*/
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
